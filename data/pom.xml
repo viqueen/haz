@@ -9,9 +9,28 @@
   <artifactId>data</artifactId>
   <packaging>pom</packaging>
   <name>haz.data</name>
-  <description>Data Project
-Data Project</description>
+  <description>Data Project</description>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.haz.data</groupId>
+        <artifactId>bytecode</artifactId>
+        <version>master-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>com.haz.data</groupId>
+        <artifactId>codec</artifactId>
+        <version>master-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>com.haz.data</groupId>
+        <artifactId>structures</artifactId>
+        <version>master-SNAPSHOT</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   <modules>
   	<module>structures</module>
+  	<module>codec</module>
   </modules>
 </project>
