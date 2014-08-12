@@ -62,7 +62,9 @@ public class DefaultCodec<T> extends AbstractCodec<T> {
               binding.count);
         }
         field.setAccessible(true);
-        field.set(result, bindingCodec.decode(pInput, pContext).get());
+        Object decoded = bindingCodec.decode(pInput, pContext).get();
+        pContext.put(binding.name, decoded);
+        field.set(result, decoded);
       }
       return Optional.of(result);
     } catch (InstantiationException | IllegalAccessException
