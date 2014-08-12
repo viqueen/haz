@@ -23,11 +23,15 @@ import com.haz.data.codec.annotation.Bind;
 public class CodecTestCase {
 
   private Codec<Dimension> dimensionCodec;
+  private Codec<Space> spaceCodec;
   private DataInputStream inputStream;
 
   @Before
   public void setUp() throws Exception {
+    
     dimensionCodec = Factory.create(Dimension.class);
+    spaceCodec = Factory.create(Space.class);
+    
     ByteArrayOutputStream bout = new ByteArrayOutputStream();
     DataOutputStream out = new DataOutputStream(bout);
     out.writeInt(20);
@@ -35,18 +39,30 @@ public class CodecTestCase {
     out.writeUTF("square");
     inputStream = new DataInputStream(new ByteArrayInputStream(
         bout.toByteArray()));
+  
   }
 
   @Test
   public void testDecode() throws IOException {
-    Optional<Dimension> dim = dimensionCodec.decode(inputStream);
-    
-    Assert.assertTrue(dim.isPresent());
-    Assert.assertEquals(20, dim.get().width);
-    Assert.assertEquals(30, dim.get().height);
-    Assert.assertEquals("square", dim.get().name);
+    Optional<Dimension> dimension = dimensionCodec.decode(inputStream);
+
+    Assert.assertTrue(dimension.isPresent());
+    Assert.assertEquals(20, dimension.get().width);
+    Assert.assertEquals(30, dimension.get().height);
+    Assert.assertEquals("square", dimension.get().name);
   }
 
+  @Test
+  public void testDecodeArray() throws IOException {
+    Optional<Space> space = spaceCodec.decode(inputStream);
+    Assert.assertTrue(space.isPresent());
+    Assert.assertEquals(1, space.get().dimensions.length);
+    Dimension[] dimensions = space.get().dimensions;
+    Assert.assertEquals(20, dimensions[0].width);
+    Assert.assertEquals(30, dimensions[0].height);
+    Assert.assertEquals("square", dimensions[0].name);
+  }
+  
   public static class Dimension {
     @Bind
     private int width;
@@ -54,9 +70,14 @@ public class CodecTestCase {
     private int height;
     @Bind
     private String name;
-    
-    public Dimension () {
-      
+
+    public Dimension() {
+
     }
+  }
+
+  public static class Space {
+    @Bind(count = "1")
+    private Dimension[] dimensions;
   }
 }
