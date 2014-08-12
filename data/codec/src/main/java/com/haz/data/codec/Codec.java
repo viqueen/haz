@@ -15,9 +15,16 @@ import java.util.stream.Stream;
  *
  */
 public interface Codec<T> {
-  public Optional<T> decode(DataInputStream pInput) throws IOException;
+
+  default Optional<T> decode(DataInputStream pInput) throws IOException {
+    return decode(pInput, new Context());
+  }
+
+  public Optional<T> decode(DataInputStream pInput, Context pContext)
+      throws IOException;
 
   public void encode(T pData, DataOutputStream pOutput) throws IOException;
 
-  public Stream<URI> uris();
+  public Stream<String> uris();
+  
 }

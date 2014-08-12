@@ -3,26 +3,20 @@
  */
 package com.haz.data.codec;
 
-import java.net.URI;
 
 /**
  * @author hasnaer
  *
  */
 public class Binding {
-  private String name;
-  private URI codecURI;
-
-  public Binding(String pName, URI pCodecURI) {
+  // public final, just to avoid get/set , guaranteed not to be reset
+  public final String name;
+  public final String codecURI;
+  public final String count;
+  public Binding(String pName, String pCodecURI, String pCount) {
     name = pName;
     codecURI = pCodecURI;
+    count = pCount;
   }
 
-  public String name() {
-    return name;
-  }
-
-  public URI codecURI() {
-    return codecURI;
-  }
 }

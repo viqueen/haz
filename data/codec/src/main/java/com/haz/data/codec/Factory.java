@@ -32,7 +32,7 @@ public class Factory {
   };
 
   @SuppressWarnings("serial")
-  public static final Map<URI, Codec<?>> codecs = new HashMap<URI, Codec<?>>() {
+  public static final Map<String, Codec<?>> codecs = new HashMap<String, Codec<?>>() {
     {
       primitiveCodecs.forEach(codec -> codec.uris().forEach(
           uri -> put(uri, codec)));
@@ -42,24 +42,24 @@ public class Factory {
   @SuppressWarnings("unchecked")
   public static <T> Codec<T> create(Class<T> pType) {
     // check if not already created
-    URI codecUri = URI.create(String.format("codec://object/%s",
-        pType.getCanonicalName()));
+    String codecUri = pType.getCanonicalName();
     if (codecs.containsKey(codecUri)) {
       return (Codec<T>) codecs.get(codecUri);
-    }
-    Codec<T> codec = new DefaultCodec<>(codecUri, pType);
+    }    
+    Codec<T> codec = pType.isArray() ? new ArrayCodec<T>(codecUri, pType) : new DefaultCodec<T>(codecUri, pType);    
     codecs.put(codecUri, codec);
     return codec;
   }
 
-  public static Optional<Codec<?>> get(URI pURI) {
+  public static Optional<Codec<?>> get(String pURI) {
     return codecs.containsKey(pURI) ? Optional.of(codecs.get(pURI)) : Optional
         .empty();
   }
 
   private static class IntegerCodec implements Codec<Integer> {
     @Override
-    public Optional<Integer> decode(DataInputStream pInput) throws IOException {
+    public Optional<Integer> decode(DataInputStream pInput, Context pContext)
+        throws IOException {
       return Optional.of(pInput.readInt());
     }
 
@@ -70,15 +70,15 @@ public class Factory {
     }
 
     @Override
-    public Stream<URI> uris() {
-      return Stream.of(URI.create("codec://object/int"),
-          URI.create("codec://object/java.lang.Integer"));
+    public Stream<String> uris() {
+      return Stream.of("int", "java.lang.Integer");
     }
   }
 
   private static class DoubleCodec implements Codec<Double> {
     @Override
-    public Optional<Double> decode(DataInputStream pInput) throws IOException {
+    public Optional<Double> decode(DataInputStream pInput, Context pContext)
+        throws IOException {
       return Optional.of(pInput.readDouble());
     }
 
@@ -89,15 +89,15 @@ public class Factory {
     }
 
     @Override
-    public Stream<URI> uris() {
-      return Stream.of(URI.create("codec://object/double"),
-          URI.create("codec://object/java.lang.Double"));
+    public Stream<String> uris() {
+      return Stream.of("double", "java.lang.Double");
     }
   }
 
   private static class UnsignedShortCodec implements Codec<Integer> {
     @Override
-    public Optional<Integer> decode(DataInputStream pInput) throws IOException {
+    public Optional<Integer> decode(DataInputStream pInput, Context pContext)
+        throws IOException {
       return Optional.of(pInput.readUnsignedShort());
     }
 
@@ -108,14 +108,15 @@ public class Factory {
     }
 
     @Override
-    public Stream<URI> uris() {
-      return Stream.of(URI.create("codec://object/unsignedshort"));
+    public Stream<String> uris() {
+      return Stream.of("unsignedshort");
     }
   }
 
   private static class ByteCodec implements Codec<Byte> {
     @Override
-    public Optional<Byte> decode(DataInputStream pInput) throws IOException {
+    public Optional<Byte> decode(DataInputStream pInput, Context pContext)
+        throws IOException {
       return Optional.of(pInput.readByte());
     }
 
@@ -125,14 +126,14 @@ public class Factory {
     }
 
     @Override
-    public Stream<URI> uris() {
-      return Stream.of(URI.create("codec://object/byte"),
-          URI.create("codec://object/java.lang.Byte"));
+    public Stream<String> uris() {
+      return Stream.of("byte", "java.lang.Byte");
     }
   }
 
   private static class UTFCodec implements Codec<String> {
-    public Optional<String> decode(DataInputStream pInput) throws IOException {
+    public Optional<String> decode(DataInputStream pInput, Context pContext)
+        throws IOException {
       return Optional.of(pInput.readUTF());
     }
 
@@ -143,8 +144,8 @@ public class Factory {
     }
 
     @Override
-    public Stream<URI> uris() {
-      return Stream.of(URI.create("codec://object/java.lang.String"));
+    public Stream<String> uris() {
+      return Stream.of("java.lang.String");
     }
   }
 }

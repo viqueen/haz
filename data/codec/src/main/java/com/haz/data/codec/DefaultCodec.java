@@ -22,17 +22,12 @@ import com.haz.data.codec.annotation.Bind;
  * @author hasnaer
  *
  */
-public class DefaultCodec<T> implements Codec<T> {
+public class DefaultCodec<T> extends AbstractCodec<T> {
 
-  protected final Logger LOG = Logger.getLogger(getClass());
-
-  private URI uri;
-  private Class<T> type;
   private List<Binding> bindings;
 
-  public DefaultCodec(URI pURI, Class<T> pType) {
-    uri = pURI;
-    type = pType;
+  public DefaultCodec(String pURI, Class<T> pType) {
+    super(pURI, pType);
     bindings = new ArrayList<>();
     loadBindings();
   }
@@ -49,24 +44,29 @@ public class DefaultCodec<T> implements Codec<T> {
   }
 
   private void loadBinding(Bind pBinding, Field pField) {
-    URI bindingURI = null;
+    String bindingURI = null;
     if (!pBinding.codec().isEmpty()) {
-      bindingURI = URI.create(pBinding.codec());
+      bindingURI = pBinding.codec();
     } else {
       bindingURI = Factory.create(pField.getType()).uris().findFirst().get();
     }
-    bindings.add(new Binding(pField.getName(), bindingURI));
+    bindings.add(new Binding(pField.getName(), bindingURI, pBinding.count()));
   }
 
   @Override
-  public Optional<T> decode(DataInputStream pInput) throws IOException {
+  public Optional<T> decode(DataInputStream pInput, Context pContext)
+      throws IOException {
     try {
       T result = type.newInstance();
       for (Binding binding : bindings) {
-        Codec<?> subCodec = Factory.get(binding.codecURI()).get();
-        Field field = type.getDeclaredField(binding.name());
+        Codec<?> bindingCodec = Factory.get(binding.codecURI).get();
+        Field field = type.getDeclaredField(binding.name);
+        if (field.getType().isArray()) {
+          pContext.put(String.format("%s.length", binding.codecURI),
+              binding.count);
+        }
         field.setAccessible(true);
-        field.set(result, subCodec.decode(pInput).get());
+        field.set(result, bindingCodec.decode(pInput, pContext).get());
       }
       return Optional.of(result);
     } catch (InstantiationException | IllegalAccessException
@@ -80,11 +80,6 @@ public class DefaultCodec<T> implements Codec<T> {
   @Override
   public void encode(T pData, DataOutputStream pOutput) throws IOException {
 
-  }
-
-  @Override
-  public Stream<URI> uris() {
-    return Stream.of(uri);
   }
 
   public List<Binding> bindings() {
