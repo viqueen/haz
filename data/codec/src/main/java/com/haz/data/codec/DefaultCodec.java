@@ -8,13 +8,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
-
-import org.apache.log4j.Logger;
 
 import com.haz.data.codec.annotation.Bind;
 
