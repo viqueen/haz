@@ -38,6 +38,7 @@
 	</dependencies>
 	<modules>
 		<module>structures</module>
+		<module>expr</module>
 		<module>codec</module>
 	</modules>
 </project>
