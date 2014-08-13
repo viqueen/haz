@@ -70,7 +70,6 @@ public class DefaultCodec<T> extends AbstractCodec<T> {
     } catch (InstantiationException | IllegalAccessException
         | NoSuchFieldException e) {
       LOG.error(e.getMessage(), e);
-      e.printStackTrace();
     }
     return Optional.empty();
   }
