@@ -8,17 +8,4 @@
 	</parent>
 	<artifactId>structures</artifactId>
 	<name>haz.data.structures</name>
-	<dependencies>
-		<!-- UNIT TEST -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-		</dependency>
-
-		<!-- LOGGING -->
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-		</dependency>
-	</dependencies>
 </project>

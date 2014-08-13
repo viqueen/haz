@@ -7,14 +7,4 @@
   </parent>
   <artifactId>codec</artifactId>
   <name>haz.data.codec</name>
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-    </dependency>
-  </dependencies>
 </project>
