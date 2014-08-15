@@ -13,11 +13,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import com.haz.data.expr.ArithmeticExprEvaluator;
+
 /**
  * @author hasnaer
  *
  */
 public class Factory {
+
+  public static final ArithmeticExprEvaluator exprEvaluator = new ArithmeticExprEvaluator();
 
   @SuppressWarnings("serial")
   private static final Set<Codec<?>> primitiveCodecs = new HashSet<Codec<?>>() {

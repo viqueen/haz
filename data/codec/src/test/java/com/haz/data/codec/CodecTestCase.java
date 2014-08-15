@@ -8,13 +8,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
-import org.junit.Assert;
+import static org.junit.Assert.*;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.haz.data.codec.annotation.Bind;
@@ -26,17 +23,18 @@ import com.haz.data.codec.annotation.Bind;
 public class CodecTestCase {
 
   private Codec<Dimension> dimensionCodec;
-  private Codec<Space> spaceCodec;
-  private Codec<Universe> universeCodec;
-  private DataInputStream inputStream;
+  private Codec<Space>     spaceCodec;
+  private Codec<Data>      dataCodec;
+  private DataInputStream  inputStream;
+  private DataInputStream  dataStream;
 
   @Before
   public void setUp() throws Exception {
 
     dimensionCodec = Factory.create(Dimension.class);
     spaceCodec = Factory.create(Space.class);
-    universeCodec = Factory.create(Universe.class);
-    
+    dataCodec = Factory.create(Data.class);
+
     ByteArrayOutputStream bout = new ByteArrayOutputStream();
     DataOutputStream out = new DataOutputStream(bout);
     out.writeInt(20);
@@ -45,46 +43,51 @@ public class CodecTestCase {
     inputStream = new DataInputStream(new ByteArrayInputStream(
         bout.toByteArray()));
 
+    bout = new ByteArrayOutputStream();
+    out = new DataOutputStream(bout);
+    out.writeInt(1);
+    out.writeInt(1);
+    out.writeInt(1);
+    out.writeInt(1);
+    out.writeInt(1);
+    dataStream = new DataInputStream(new ByteArrayInputStream(
+        bout.toByteArray()));
   }
 
   @Test
   public void testDecode() throws IOException {
     Optional<Dimension> dimension = dimensionCodec.decode(inputStream);
 
-    Assert.assertTrue(dimension.isPresent());
-    Assert.assertEquals(20, dimension.get().width);
-    Assert.assertEquals(30, dimension.get().height);
-    Assert.assertEquals("square", dimension.get().name);
+    assertTrue(dimension.isPresent());
+    assertEquals(20, dimension.get().width);
+    assertEquals(30, dimension.get().height);
+    assertEquals("square", dimension.get().name);
   }
 
   @Test
   public void testDecodeArray() throws IOException {
     Optional<Space> space = spaceCodec.decode(inputStream);
-    Assert.assertTrue(space.isPresent());
-    Assert.assertEquals(1, space.get().dimensions.length);
+    assertTrue(space.isPresent());
+    assertEquals(1, space.get().dimensions.length);
     Dimension[] dimensions = space.get().dimensions;
-    Assert.assertEquals(20, dimensions[0].width);
-    Assert.assertEquals(30, dimensions[0].height);
-    Assert.assertEquals("square", dimensions[0].name);
+    assertEquals(20, dimensions[0].width);
+    assertEquals(30, dimensions[0].height);
+    assertEquals("square", dimensions[0].name);
   }
 
   @Test
-  @Ignore
-  public void testDecodeList() throws IOException {
-    Optional<Universe> universe = universeCodec.decode(inputStream);
-    Assert.assertTrue(universe.isPresent());
-    Assert.assertEquals(1, universe.get().dimensions.size());
-    List<Dimension> dimensions = universe.get().dimensions;
-    Assert.assertEquals(20, dimensions.get(0).width);
-    Assert.assertEquals(30, dimensions.get(0).height);
-    Assert.assertEquals("square", dimensions.get(0).name);
+  public void testDecodeArrayWithExpr() throws IOException {
+    Optional<Data> data = dataCodec.decode(dataStream);
+    assertTrue(data.isPresent());
+    assertEquals(4, data.get().entries.length);
+    assertArrayEquals(new int[] { 1, 1, 1, 1 }, data.get().entries);
   }
 
   public static class Dimension {
     @Bind
-    private int width;
+    private int    width;
     @Bind
-    private int height;
+    private int    height;
     @Bind
     private String name;
 
@@ -98,8 +101,11 @@ public class CodecTestCase {
     private Dimension[] dimensions;
   }
 
-  public static class Universe {
-    @Bind(count = "1")
-    private List<Dimension> dimensions;
+  public static class Data {
+    @Bind
+    private int   count;
+
+    @Bind(count = "($count + 1) * 2")
+    private int[] entries;
   }
 }
