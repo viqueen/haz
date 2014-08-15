@@ -20,7 +20,7 @@ public abstract class InfixExpressionEvaluator<T> {
     Stack<Operator<T>> operators = new Stack<Operator<T>>() {
       @Override
       public Operator<T> push(Operator<T> pItem) {
-        if (!isEmpty() && hasHigherPrecedence(pItem, peek())) {
+        if (!isEmpty() && !hasHigherPrecedence(pItem, peek())) {
           T right = values.pop();
           T left = values.pop();
           values.push(pop().apply(left, right));
