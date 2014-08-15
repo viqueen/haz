@@ -7,7 +7,7 @@ package com.haz.data.expr;
  * @author hasnaer
  *
  */
-public interface Grouping extends Token {
+public interface Grouping<T> extends Operator<T> {
 
   @Override
   default Type type() {
@@ -15,4 +15,5 @@ public interface Grouping extends Token {
   }
 
   boolean opening();
+  
 }

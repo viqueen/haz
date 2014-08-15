@@ -16,13 +16,20 @@ import org.junit.Test;
 public class ArithmeticExprEvaluatorTestCase {
 
   private static final ArithmeticExprEvaluator evaluator = new ArithmeticExprEvaluator();
-  private static final String                  SUM_EXPR  = "3 * 2 + 4";
+  private static final String                  EXPR_ONE  = "3 * 2 + 4 * 2";
+  private static final String                  EXPR_TWO  = "3 * (4 + 1)";
 
   @Test
   public void testSumExpression() {
-    Optional<Double> result = evaluator.eval(SUM_EXPR);
-    assertTrue(result.isPresent());
-    assertTrue(String.format("expected 21 but was %s", result.get()), result
-        .get().equals(10.0));
+    Optional<Double> resultOne = evaluator.eval(EXPR_ONE);
+    assertTrue(resultOne.isPresent());
+    assertTrue(String.format("expected 21 but was %s", resultOne.get()), resultOne
+        .get().equals(14.0));
+
+    Optional<Double> resultTwo = evaluator.eval(EXPR_TWO);
+    assertTrue(resultTwo.isPresent());
+    assertTrue(String.format("expected 21 but was %s", resultTwo.get()), resultTwo
+        .get().equals(15.0));
+
   }
 }

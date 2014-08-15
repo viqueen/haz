@@ -41,9 +41,48 @@ public class ArithmeticExprEvaluator extends InfixExpressionEvaluator<Double> {
       } else if (matcher.group(OP) != null) {
         return Optional.of(ImmutablePair.of(
             ArithmeticOperator.fromString(token), rest));
+      } else if (matcher.group(GROUP) != null) {
+        return Optional.of(ImmutablePair.of(
+            ArithmeticGrouping.fromString(token), rest));
       }
     }
     return Optional.empty();
+  }
+
+  enum ArithmeticGrouping implements Grouping<Double> {
+    LEFT_PAREN(3, true), RIGHT_PAREN(3, false);
+    final int     precedence;
+    final boolean opening;
+
+    ArithmeticGrouping(int pPrecedence, boolean pOpening) {
+      precedence = pPrecedence;
+      opening = pOpening;
+    }
+
+    @Override
+    public int precedence() {
+      return precedence;
+    }
+
+    @Override
+    public Double apply(Double pLeft, Double pRight) {
+      return null;
+    }
+
+    @Override
+    public boolean opening() {
+      return opening;
+    }
+
+    static ArithmeticGrouping fromString(String pExpr) {
+      switch (pExpr) {
+        case "(":
+          return LEFT_PAREN;
+        case ")":
+        default:
+          return RIGHT_PAREN;
+      }
+    }
   }
 
   enum ArithmeticOperator implements Operator<Double> {

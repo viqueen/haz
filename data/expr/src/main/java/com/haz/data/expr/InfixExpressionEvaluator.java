@@ -8,6 +8,8 @@ import java.util.Stack;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.haz.data.expr.Token.Type;
+
 /**
  * @author hasnaer
  *
@@ -20,16 +22,13 @@ public abstract class InfixExpressionEvaluator<T> {
     Stack<Operator<T>> operators = new Stack<Operator<T>>() {
       @Override
       public Operator<T> push(Operator<T> pItem) {
-        if (!isEmpty() && !hasHigherPrecedence(pItem, peek())) {
+        if (!isEmpty() && peek().type() != Type.GROUPING
+            && pItem.precedence() < peek().precedence()) {
           T right = values.pop();
           T left = values.pop();
           values.push(pop().apply(left, right));
         }
         return super.push(pItem);
-      }
-
-      private boolean hasHigherPrecedence(Operator<T> pOp1, Operator<T> pOp2) {
-        return pOp1.precedence() > pOp2.precedence();
       }
     };
 
@@ -44,8 +43,20 @@ public abstract class InfixExpressionEvaluator<T> {
           operators.push((Operator<T>) token.getLeft());
           break;
         case GROUPING:
+          Grouping grouping = (Grouping) token.getLeft();
+          if (grouping.opening()) {
+            operators.push(grouping);
+          } else {
+            Operator<T> op = operators.pop();
+            while (op.type() != Type.GROUPING) {
+              T right = values.pop();
+              T left = values.pop();
+              values.push(op.apply(left, right));
+              op = operators.pop();
+            }
+          }
           break;
-      }      
+      }
       nextToken = nextToken(token.getRight());
     }
 
@@ -54,11 +65,11 @@ public abstract class InfixExpressionEvaluator<T> {
       T left = values.pop();
       values.push(operators.pop().apply(left, right));
     }
-    
+
     if (values.size() == 1) {
       return Optional.of(values.pop());
     }
-    
+
     return Optional.empty();
   }
 
