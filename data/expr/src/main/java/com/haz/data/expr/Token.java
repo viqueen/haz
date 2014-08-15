@@ -9,10 +9,9 @@ package com.haz.data.expr;
  */
 interface Token {
 
-  boolean isValue();
-  
-  boolean isOperator();
+  Type type();
 
-  boolean isGrouping();
-
+  static enum Type {
+    VALUE,OPERATOR,GROUPING;
+  }
 }

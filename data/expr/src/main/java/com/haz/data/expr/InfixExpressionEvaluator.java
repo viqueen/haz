@@ -36,11 +36,16 @@ public abstract class InfixExpressionEvaluator<T> {
     Optional<Pair<Token, String>> nextToken = nextToken(pExpression);
     while (nextToken.isPresent()) {
       Pair<Token, String> token = nextToken.get();
-      if (token.getLeft().isOperator()) {
-        operators.push((Operator<T>) token.getLeft());
-      } else if (token.getKey().isValue()) {
-        values.push(((Value<T>) token.getLeft()).value);
-      }
+      switch (token.getLeft().type()) {
+        case VALUE:
+          values.push(((Value<T>) token.getLeft()).value);
+          break;
+        case OPERATOR:
+          operators.push((Operator<T>) token.getLeft());
+          break;
+        case GROUPING:
+          break;
+      }      
       nextToken = nextToken(token.getRight());
     }
 

@@ -8,21 +8,12 @@ package com.haz.data.expr;
  *
  */
 public interface Operator<T> extends Token {
-  @Override
-  default boolean isValue() {
-    return false;
-  }
-  @Override
-  default boolean isOperator() {
-    return true;
-  }
-
-  @Override
-  default boolean isGrouping() {
-    return false;
+  
+  default Type type() {
+    return Type.OPERATOR;
   }
 
   int precedence();
 
-  public T apply (T pLeft, T pRight);
+  public T apply(T pLeft, T pRight);
 }

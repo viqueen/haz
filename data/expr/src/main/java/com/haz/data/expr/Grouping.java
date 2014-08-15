@@ -8,14 +8,10 @@ package com.haz.data.expr;
  *
  */
 public interface Grouping extends Token {
-  @Override
-  default boolean isOperator() {
-    return false;
-  }
 
   @Override
-  default boolean isGrouping() {
-    return true;
+  default Type type() {
+    return Type.GROUPING;
   }
 
   boolean opening();
