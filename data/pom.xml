@@ -23,6 +23,11 @@
 				<artifactId>structures</artifactId>
 				<version>master-SNAPSHOT</version>
 			</dependency>
+			<dependency>
+			 <groupId>com.haz.data</groupId>
+			 <artifactId>expr</artifactId>
+			 <version>master-SNAPSHOT</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
