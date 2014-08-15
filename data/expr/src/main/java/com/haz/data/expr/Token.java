@@ -7,7 +7,7 @@ package com.haz.data.expr;
  * @author hasnaer
  *
  */
-public interface Token {
+interface Token {
 
   boolean isValue();
   

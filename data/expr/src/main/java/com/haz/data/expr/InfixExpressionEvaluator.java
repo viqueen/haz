@@ -3,9 +3,10 @@
  */
 package com.haz.data.expr;
 
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Stack;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * @author hasnaer
@@ -32,15 +33,15 @@ public abstract class InfixExpressionEvaluator<T> {
       }
     };
 
-    Optional<Entry<Token, String>> nextToken = nextToken(pExpression);
+    Optional<Pair<Token, String>> nextToken = nextToken(pExpression);
     while (nextToken.isPresent()) {
-      Entry<Token, String> token = nextToken.get();
-      if (token.getKey().isOperator()) {
-        operators.push((Operator<T>) token.getKey());
+      Pair<Token, String> token = nextToken.get();
+      if (token.getLeft().isOperator()) {
+        operators.push((Operator<T>) token.getLeft());
       } else if (token.getKey().isValue()) {
-        values.push(((Value<T>) token.getKey()).value);
+        values.push(((Value<T>) token.getLeft()).value);
       }
-      nextToken = nextToken(token.getValue());
+      nextToken = nextToken(token.getRight());
     }
 
     while (!operators.isEmpty()) {
@@ -63,6 +64,6 @@ public abstract class InfixExpressionEvaluator<T> {
    * @return a pair with left as extracted token, and right as the rest of the
    *         input expression
    */
-  protected abstract Optional<Entry<Token, String>> nextToken(String pExpression);
+  protected abstract Optional<Pair<Token, String>> nextToken(String pExpression);
 
 }
