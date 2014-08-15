@@ -1,7 +1,7 @@
 /**
  * Hasnae Rehioui (hasnae.rehioui@gmail.com)
  */
-package com.haz.data.expr;
+package com.haz.legacy.data.expr;
 
 import java.util.Optional;
 import java.util.Stack;
@@ -12,7 +12,8 @@ import java.util.regex.Pattern;
  * @author hasnaer
  *
  */
-public class InfixExprEvaluator {
+
+class InfixExprEvaluator {
 
   private static final String NUM = "NUM";
   private static final String ALPHA = "ALPHA";

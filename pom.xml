@@ -47,12 +47,31 @@
 					<configuration>
 						<source>${java.source.version}</source>
 						<target>${java.target.version}</target>
+						<excludes>
+							<exclude>com/haz/legacy/**/*.java</exclude>
+						</excludes>
 					</configuration>
+					<executions>
+						<execution>
+							<id>default-testCompile</id>
+							<phase>test-compile</phase>
+							<configuration>
+								<testExcludes>
+									<exclude>com/haz/legacy/**/*.java</exclude>
+								</testExcludes>
+							</configuration>
+							<goals>
+								<goal>testCompile</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
+
 			</plugins>
 		</pluginManagement>
 
 		<plugins>
+
 			<!-- MAVEN SITE PLUGIN -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -74,11 +93,14 @@
 			</plugin>
 		</plugins>
 	</build>
+
 	<properties>
 		<java.source.version>1.8</java.source.version>
 		<java.target.version>1.8</java.target.version>
 	</properties>
+
 	<modules>
 		<module>data</module>
 	</modules>
+
 </project>

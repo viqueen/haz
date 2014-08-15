@@ -1,17 +1,16 @@
 /**
  * Hasnae Rehioui (hasnae.rehioui@gmail.com)
  */
-package com.haz.data.expr;
+package com.haz.legacy.data.expr;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
-
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.haz.data.expr.InfixExprEvaluator;
+import com.haz.legacy.data.expr.InfixExprEvaluator;
 
 /**
  * @author hasnaer
