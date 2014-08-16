@@ -46,5 +46,6 @@
 		<module>structures</module>
 		<module>expr</module>
 		<module>codec</module>
+		<module>bytecode</module>
 	</modules>
 </project>
