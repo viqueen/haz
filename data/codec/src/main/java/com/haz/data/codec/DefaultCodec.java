@@ -25,16 +25,17 @@ public class DefaultCodec<T> extends AbstractCodec<T> {
   public DefaultCodec(String pURI, Class<T> pType) {
     super(pURI, pType);
     bindings = new ArrayList<>();
-    loadBindings();
+    loadBindings(type);
   }
 
-  private void loadBindings() {
-    // TODO: handle inherited fields first
-    // bindings.addAll(resolveSuperClass.bindings())
-    for (Field field : type.getDeclaredFields()) {
-      Annotation binding = field.getDeclaredAnnotation(Bind.class);
-      if (binding != null) {
-        loadBinding((Bind) binding, field);
+  private void loadBindings(Class<?> pType) {
+    if (pType != null) {
+      loadBindings(pType.getSuperclass());
+      for (Field field : pType.getDeclaredFields()) {
+        Annotation binding = field.getDeclaredAnnotation(Bind.class);
+        if (binding != null) {
+          loadBinding((Bind) binding, field);
+        }
       }
     }
   }
@@ -46,7 +47,7 @@ public class DefaultCodec<T> extends AbstractCodec<T> {
     } else {
       bindingURI = Factory.create(pField.getType()).uris().findFirst().get();
     }
-    bindings.add(new Binding(pField.getName(), bindingURI, pBinding.count()));
+    bindings.add(new Binding(pField, bindingURI, pBinding.count()));
   }
 
   @Override
@@ -56,19 +57,19 @@ public class DefaultCodec<T> extends AbstractCodec<T> {
       T result = type.newInstance();
       for (Binding binding : bindings) {
         Codec<?> bindingCodec = Factory.get(binding.codecURI).get();
-        Field field = type.getDeclaredField(binding.name);
+        Field field = binding.field;
         if (field.getType().isArray()) {
           pContext.put(String.format("%s.length", binding.codecURI),
               binding.count);
         }
         field.setAccessible(true);
         Object decoded = bindingCodec.decode(pInput, pContext).get();
-        pContext.put(binding.name, decoded);
+        pContext.put(field.getName(), decoded);
         field.set(result, decoded);
       }
       return Optional.of(result);
     } catch (InstantiationException | IllegalAccessException
-        | NoSuchFieldException e) {
+        e) {
       LOG.error(e.getMessage(), e);
     }
     return Optional.empty();

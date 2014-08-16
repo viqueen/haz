@@ -22,11 +22,12 @@ import com.haz.data.codec.annotation.Bind;
  */
 public class CodecTestCase {
 
-  private Codec<Dimension> dimensionCodec;
-  private Codec<Space>     spaceCodec;
-  private Codec<Data>      dataCodec;
-  private DataInputStream  inputStream;
-  private DataInputStream  dataStream;
+  private Codec<Dimension>    dimensionCodec;
+  private Codec<Space>        spaceCodec;
+  private Codec<Data>         dataCodec;
+  private Codec<Child> childCodec;
+  private DataInputStream     inputStream;
+  private DataInputStream     dataStream;
 
   @Before
   public void setUp() throws Exception {
@@ -34,12 +35,14 @@ public class CodecTestCase {
     dimensionCodec = Factory.create(Dimension.class);
     spaceCodec = Factory.create(Space.class);
     dataCodec = Factory.create(Data.class);
-
+    childCodec = Factory.create(Child.class);
+    
     ByteArrayOutputStream bout = new ByteArrayOutputStream();
     DataOutputStream out = new DataOutputStream(bout);
     out.writeInt(20);
     out.writeInt(30);
     out.writeUTF("square");
+    
     inputStream = new DataInputStream(new ByteArrayInputStream(
         bout.toByteArray()));
 
@@ -50,6 +53,7 @@ public class CodecTestCase {
     out.writeInt(1);
     out.writeInt(1);
     out.writeInt(1);
+    
     dataStream = new DataInputStream(new ByteArrayInputStream(
         bout.toByteArray()));
   }
@@ -83,6 +87,14 @@ public class CodecTestCase {
     assertArrayEquals(new int[] { 1, 1, 1, 1 }, data.get().entries);
   }
 
+  @Test
+  public void testDecodeWithInheritence() throws IOException {
+    Optional<Child> child = childCodec.decode(inputStream);
+    assertTrue(child.isPresent());
+    assertEquals(20, child.get().twenty);
+    assertEquals(30, child.get().thirty);
+  }
+
   public static class Dimension {
     @Bind
     private int    width;
@@ -107,5 +119,15 @@ public class CodecTestCase {
 
     @Bind(count = "($count + 1) * 2")
     private int[] entries;
+  }
+
+  public static class Baby {
+    @Bind
+    int twenty;
+  }
+
+  public static class Child extends Baby {
+    @Bind
+    int thirty;
   }
 }

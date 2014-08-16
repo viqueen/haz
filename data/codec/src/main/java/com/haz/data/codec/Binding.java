@@ -3,6 +3,8 @@
  */
 package com.haz.data.codec;
 
+import java.lang.reflect.Field;
+
 
 /**
  * @author hasnaer
@@ -10,11 +12,11 @@ package com.haz.data.codec;
  */
 public class Binding {
   // public final, just to avoid get/set , guaranteed not to be reset
-  public final String name;
+  public final Field field;
   public final String codecURI;
   public final String count;
-  public Binding(String pName, String pCodecURI, String pCount) {
-    name = pName;
+  public Binding(Field pField, String pCodecURI, String pCount) {
+    field = pField;
     codecURI = pCodecURI;
     count = pCount;
   }
