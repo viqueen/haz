@@ -28,7 +28,10 @@ public class Factory {
     {
       add(new IntegerCodec());
       add(new DoubleCodec());
+      add(new FloatCodec());
+      add(new LongCodec());
       add(new UnsignedShortCodec());
+      add(new UnsignedByteCodec());
       add(new ByteCodec());
       add(new UTFCodec());
     }
@@ -97,6 +100,40 @@ public class Factory {
     }
   }
 
+  private static class FloatCodec implements Codec<Float> {
+    @Override
+    public Optional<Float> decode(DataInputStream pInput, Context pContext)
+        throws IOException {
+      return Optional.of(pInput.readFloat());
+    }
+    @Override
+    public void encode(Float pData, DataOutputStream pOutput)
+        throws IOException {
+      
+    }
+    @Override
+    public Stream<String> uris() {
+      return Stream.of("float", "java.lang.Float");
+    }
+  }
+  
+  private static class LongCodec implements Codec<Long> {
+    @Override
+    public Optional<Long> decode(DataInputStream pInput, Context pContext)
+        throws IOException {
+      return Optional.of(pInput.readLong());
+    }
+    @Override
+    public void encode(Long pData, DataOutputStream pOutput)
+        throws IOException {
+      
+    }
+    @Override
+    public Stream<String> uris() {
+      return Stream.of("long", "java.lang.Long");
+    }
+  }
+  
   private static class UnsignedShortCodec implements Codec<Integer> {
     @Override
     public Optional<Integer> decode(DataInputStream pInput, Context pContext)
@@ -113,6 +150,23 @@ public class Factory {
     @Override
     public Stream<String> uris() {
       return Stream.of("unsignedshort");
+    }
+  }
+  
+  private static class UnsignedByteCodec implements Codec<Integer> {
+    @Override
+    public Optional<Integer> decode(DataInputStream pInput, Context pContext)
+        throws IOException {
+      return Optional.of(pInput.readUnsignedByte());
+    }
+    @Override
+    public void encode(Integer pData, DataOutputStream pOutput)
+        throws IOException {
+      
+    }
+    @Override
+    public Stream<String> uris() {
+      return Stream.of("unsignedbyte");
     }
   }
 
