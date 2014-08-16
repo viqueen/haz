@@ -8,8 +8,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.haz.data.codec.annotation.Bind;
@@ -25,27 +30,39 @@ public class DefaultCodec<T> extends AbstractCodec<T> {
   public DefaultCodec(String pURI, Class<T> pType) {
     super(pURI, pType);
     bindings = new ArrayList<>();
-    loadBindings(type);
+    loadBindings(type, new HashMap<>());
   }
 
-  private void loadBindings(Class<?> pType) {
-    if (pType != null) {
-      loadBindings(pType.getSuperclass());
+  private void loadBindings(Class<?> pType, Map<String, Class> pGenerics) {
+    if (pType != null && !pType.equals(Object.class)) {
+      if (pType.getGenericSuperclass() instanceof ParameterizedType) {
+        TypeVariable[] typeVariables = pType.getSuperclass()
+            .getTypeParameters();
+        Type[] actualTypes = ((ParameterizedType) pType.getGenericSuperclass())
+            .getActualTypeArguments();
+        for (int i = 0; i < typeVariables.length; i++) {
+          pGenerics.put(typeVariables[i].getName(), (Class) actualTypes[i]);
+        }
+      }
+      loadBindings(pType.getSuperclass(), pGenerics);
       for (Field field : pType.getDeclaredFields()) {
         Annotation binding = field.getDeclaredAnnotation(Bind.class);
         if (binding != null) {
-          loadBinding((Bind) binding, field);
+          loadBinding((Bind) binding, field, pGenerics);
         }
       }
     }
   }
 
-  private void loadBinding(Bind pBinding, Field pField) {
+  private void loadBinding(Bind pBinding, Field pField,
+      Map<String, Class> pGenerics) {
     String bindingURI = null;
     if (!pBinding.codec().isEmpty()) {
       bindingURI = pBinding.codec();
     } else {
-      bindingURI = Factory.create(pField.getType()).uris().findFirst().get();
+      Class<?> c = pGenerics.getOrDefault(
+          pField.getGenericType().getTypeName(), pField.getType());
+      bindingURI = Factory.create(c).uris().findFirst().get();
     }
     bindings.add(new Binding(pField, bindingURI, pBinding.count()));
   }
@@ -68,8 +85,7 @@ public class DefaultCodec<T> extends AbstractCodec<T> {
         field.set(result, decoded);
       }
       return Optional.of(result);
-    } catch (InstantiationException | IllegalAccessException
-        e) {
+    } catch (InstantiationException | IllegalAccessException e) {
       LOG.error(e.getMessage(), e);
     }
     return Optional.empty();

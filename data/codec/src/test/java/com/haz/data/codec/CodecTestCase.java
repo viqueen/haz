@@ -25,7 +25,9 @@ public class CodecTestCase {
   private Codec<Dimension>    dimensionCodec;
   private Codec<Space>        spaceCodec;
   private Codec<Data>         dataCodec;
-  private Codec<Child> childCodec;
+  private Codec<Child>        childCodec;
+  private Codec<IntegerValue> integerValueCodec;
+
   private DataInputStream     inputStream;
   private DataInputStream     dataStream;
 
@@ -36,13 +38,14 @@ public class CodecTestCase {
     spaceCodec = Factory.create(Space.class);
     dataCodec = Factory.create(Data.class);
     childCodec = Factory.create(Child.class);
-    
+    integerValueCodec = Factory.create(IntegerValue.class);
+
     ByteArrayOutputStream bout = new ByteArrayOutputStream();
     DataOutputStream out = new DataOutputStream(bout);
     out.writeInt(20);
     out.writeInt(30);
     out.writeUTF("square");
-    
+
     inputStream = new DataInputStream(new ByteArrayInputStream(
         bout.toByteArray()));
 
@@ -53,15 +56,14 @@ public class CodecTestCase {
     out.writeInt(1);
     out.writeInt(1);
     out.writeInt(1);
-    
+
     dataStream = new DataInputStream(new ByteArrayInputStream(
         bout.toByteArray()));
   }
-
+  
   @Test
   public void testDecode() throws IOException {
     Optional<Dimension> dimension = dimensionCodec.decode(inputStream);
-
     assertTrue(dimension.isPresent());
     assertEquals(20, dimension.get().width);
     assertEquals(30, dimension.get().height);
@@ -93,6 +95,14 @@ public class CodecTestCase {
     assertTrue(child.isPresent());
     assertEquals(20, child.get().twenty);
     assertEquals(30, child.get().thirty);
+  }
+
+  @Test
+  public void testDecodeWithInheritenceAndGenerics() throws IOException {
+    Optional<IntegerValue> integerValue = integerValueCodec.decode(inputStream);
+    assertTrue(integerValue.isPresent());
+    assertEquals(20, integerValue.get().value.intValue());
+    assertEquals(30, integerValue.get().anotherValue);
   }
 
   public static class Dimension {
@@ -129,5 +139,15 @@ public class CodecTestCase {
   public static class Child extends Baby {
     @Bind
     int thirty;
+  }
+
+  public static class NumberValue<T> {
+    @Bind
+    T value;
+  }
+
+  public static class IntegerValue extends NumberValue<Integer> {
+    @Bind
+    int anotherValue;
   }
 }
