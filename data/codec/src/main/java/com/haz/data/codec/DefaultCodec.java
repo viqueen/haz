@@ -18,6 +18,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.haz.data.codec.annotation.Bind;
+import com.haz.data.codec.annotation.BindSelect;
+import com.haz.data.codec.binding.Binding;
+import com.haz.data.codec.binding.SelectionBinding;
+import com.haz.data.codec.binding.SimpleBinding;
 
 /**
  * @author hasnaer
@@ -33,6 +37,7 @@ public class DefaultCodec<T> extends AbstractCodec<T> {
     loadBindings(type, new HashMap<>());
   }
 
+  @SuppressWarnings("rawtypes")
   private void loadBindings(Class<?> pType, Map<String, Class> pGenerics) {
     if (pType != null && !pType.equals(Object.class)) {
       if (pType.getGenericSuperclass() instanceof ParameterizedType) {
@@ -50,10 +55,15 @@ public class DefaultCodec<T> extends AbstractCodec<T> {
         if (binding != null) {
           loadBinding((Bind) binding, field, pGenerics);
         }
+        binding = field.getDeclaredAnnotation(BindSelect.class);
+        if (binding != null) {
+          loadBinding((BindSelect) binding, field, pGenerics);
+        }
       }
     }
   }
 
+  @SuppressWarnings("rawtypes")
   private void loadBinding(Bind pBinding, Field pField,
       Map<String, Class> pGenerics) {
     String bindingURI = null;
@@ -64,7 +74,13 @@ public class DefaultCodec<T> extends AbstractCodec<T> {
           pField.getGenericType().getTypeName(), pField.getType());
       bindingURI = Factory.create(c).uris().findFirst().get();
     }
-    bindings.add(new Binding(pField, bindingURI, pBinding.count()));
+    bindings.add(new SimpleBinding(pField, bindingURI, pBinding.count()));
+  }
+
+  @SuppressWarnings("rawtypes")
+  private void loadBinding(BindSelect pBinding, Field pField,
+      Map<String, Class> pGenerics) {
+    bindings.add(new SelectionBinding(pField, pBinding.types(), pBinding.keyExpr()));
   }
 
   @Override
@@ -73,11 +89,24 @@ public class DefaultCodec<T> extends AbstractCodec<T> {
     try {
       T result = type.newInstance();
       for (Binding binding : bindings) {
-        Codec<?> bindingCodec = Factory.get(binding.codecURI).get();
-        Field field = binding.field;
+        String codecURI = "";
+        String count = "";
+        Field field = binding.field();
+        switch (binding.type()) {
+          case SIMPLE:
+            SimpleBinding simple = (SimpleBinding) binding;
+            codecURI = simple.codecURI;
+            count = simple.count;
+            break;
+          case SELECTION:
+            SelectionBinding selection = (SelectionBinding) binding;
+            codecURI = selection.resolveCodecURI (expandExpression(selection.keyExpr, pContext));
+            break;
+        }
+        Codec<?> bindingCodec = Factory.get(codecURI).get();        
         if (field.getType().isArray()) {
-          pContext.put(String.format("%s.length", binding.codecURI),
-              binding.count);
+          pContext.put(String.format("%s.length", codecURI),
+              count);
         }
         field.setAccessible(true);
         Object decoded = bindingCodec.decode(pInput, pContext).get();
@@ -98,5 +127,5 @@ public class DefaultCodec<T> extends AbstractCodec<T> {
 
   public List<Binding> bindings() {
     return bindings;
-  }
+  } 
 }
