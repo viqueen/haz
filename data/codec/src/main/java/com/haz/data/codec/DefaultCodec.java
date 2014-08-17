@@ -74,7 +74,7 @@ public class DefaultCodec<T> extends AbstractCodec<T> {
           pField.getGenericType().getTypeName(), pField.getType());
       bindingURI = Factory.create(c).uris().findFirst().get();
     }
-    bindings.add(new SimpleBinding(pField, bindingURI, pBinding.count()));
+    bindings.add(new SimpleBinding(pField, bindingURI, pBinding.count(), pBinding.subCodec()));
   }
 
   @SuppressWarnings("rawtypes")
@@ -91,12 +91,14 @@ public class DefaultCodec<T> extends AbstractCodec<T> {
       for (Binding binding : bindings) {
         String codecURI = "";
         String count = "";
+        String subCodec = "";
         Field field = binding.field();
         switch (binding.type()) {
           case SIMPLE:
             SimpleBinding simple = (SimpleBinding) binding;
             codecURI = simple.codecURI;
             count = simple.count;
+            subCodec = simple.subCodecURI;
             break;
           case SELECTION:
             SelectionBinding selection = (SelectionBinding) binding;
@@ -107,6 +109,10 @@ public class DefaultCodec<T> extends AbstractCodec<T> {
         if (field.getType().isArray()) {
           pContext.put(String.format("%s.length", codecURI),
               count);
+          if (!subCodec.isEmpty()) {
+            pContext.put(String.format("%s.subCodec", codecURI),
+                Factory.get(subCodec).get());
+          }
         }
         field.setAccessible(true);
         Object decoded = bindingCodec.decode(pInput, pContext).get();

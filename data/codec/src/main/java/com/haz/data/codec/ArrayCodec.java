@@ -17,11 +17,10 @@ public class ArrayCodec<T> extends AbstractCodec<T> {
 
   protected final String ARRAY_LENGTH_KEY = String.format("%s.length",
                                               type.getCanonicalName());
-  private final Codec<?> componentCodec;
+  protected final String SUBCODEC_KEY = String.format("%s.subCodec", type.getCanonicalName());
 
   public ArrayCodec(String pUri, Class<T> pType) {
     super(pUri, pType);
-    componentCodec = Factory.create(pType.getComponentType());
   }
 
   @SuppressWarnings("unchecked")
@@ -30,6 +29,14 @@ public class ArrayCodec<T> extends AbstractCodec<T> {
       throws IOException {
     int length = getLength(pContext);
     T result = (T) Array.newInstance(type.getComponentType(), length);
+    Optional<?> subCodec = pContext.get(SUBCODEC_KEY);
+    Codec<?> componentCodec;
+    if (subCodec.isPresent()) {
+      componentCodec = (Codec<?>) subCodec.get();
+    }
+    else {
+      componentCodec = Factory.create(type.getComponentType());
+    }
     for (int i = 0; i < length; i++) {
       Array.set(result, i, componentCodec.decode(pInput, pContext).get());
     }

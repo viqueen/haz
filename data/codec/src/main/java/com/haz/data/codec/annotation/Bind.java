@@ -17,5 +17,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Bind {
   String codec() default "";
+  String subCodec() default "";
   String count() default "";
 }
