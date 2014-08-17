@@ -34,10 +34,10 @@ public class SelectionBinding extends AbstractBinding {
    * @param pExpandExpression
    * @return
    */
-  public String resolveCodecURI(String pExpr) {
+  public String resolveCodecURI(final String pExpr) {
     return Factory
         .create(types.stream().filter(type -> 
-        ((BindType)type.getDeclaredAnnotation(BindType.class)).key().equals(pExpr))
+        pExpr.matches(((BindType)type.getDeclaredAnnotation(BindType.class)).key()))
         .findFirst().get()).uris()
         .findFirst().get();
   }
