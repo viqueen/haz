@@ -14,53 +14,53 @@ import com.haz.data.codec.annotation.Bind;
 public class ClassFile {
 
   @Bind
-  private int          magic;
+  protected int magic;
 
   @Bind(codec = "unsignedshort")
-  private int          minorVersion;
+  protected int minorVersion;
 
   @Bind(codec = "unsignedshort")
-  private int          majorVersion;
+  protected int majorVersion;
 
   @Bind(codec = "unsignedshort")
-  private int          constantPoolCount;
+  protected int constantPoolCount;
 
   @Bind(count = "$constantPoolCount - 1")
-  private CP_Info[]    constantPool;
+  protected CP_Info[] constantPool;
 
   @Bind(codec = "unsignedshort")
-  private int          accessFlags;
+  protected int accessFlags;
 
   @Bind(codec = "unsignedshort")
-  private int          thisClass;
+  protected int thisClass;
 
-  @Bind(codec = "unsignedshort")
-  private int          superClass;
+   @Bind(codec = "unsignedshort")
+  protected int superClass;
 
-  @Bind(codec = "unsignedshort")
-  private int          interfacesCount;
+   @Bind(codec = "unsignedshort")
+  protected int interfacesCount;
 
-  @Bind(codec = "unsignedshort", count = "$interfacesCount")
-  private int[]        interfaces;       // add a mapper or transformer, read
-                                          // unsigned short but map it to an
-                                          // entry in the constant pool
+//   @Bind(codec = "unsignedshort", count = "$interfacesCount")
+  protected int[] interfaces; // add a mapper or transformer, read
+                            // unsigned short but map it to an
+                            // entry in the constant pool
 
-  @Bind(codec = "unsignedshort")
-  private int          fieldsCount;
+  // @Bind(codec = "unsignedshort")
+  private int fieldsCount;
 
-  @Bind(count = "$fieldsCount")
-  private FieldInfo[]  fields;
+  // @Bind(count = "$fieldsCount")
+  private FieldInfo[] fields;
 
-  @Bind(codec = "unsignedshort")
-  private int          methodsCount;
+  // @Bind(codec = "unsignedshort")
+  private int methodsCount;
 
-  @Bind(count = "$methodsCount")
+  // @Bind(count = "$methodsCount")
   private MethodInfo[] methods;
 
-  @Bind(codec = "unsignedshort")
-  private int          attributesCount;
+  // @Bind(codec = "unsignedshort")
+  private int attributesCount;
 
-  @Bind(count = "$attributesCount")
-  private Attribute[]  attributes;
+  // @Bind(count = "$attributesCount")
+  private Attribute[] attributes;
 
 }
