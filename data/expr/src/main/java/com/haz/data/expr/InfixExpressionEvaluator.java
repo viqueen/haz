@@ -4,11 +4,11 @@
 package com.haz.data.expr;
 
 import java.util.Optional;
-import java.util.Stack;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.haz.data.expr.Token.Type;
+import com.haz.data.stack.Stack;
 
 /**
  * @author hasnaer
@@ -21,14 +21,14 @@ public abstract class InfixExpressionEvaluator<T> {
     Stack<T> values = new Stack<>();
     Stack<Operator<T>> operators = new Stack<Operator<T>>() {
       @Override
-      public Operator<T> push(Operator<T> pItem) {
-        if (!isEmpty() && peek().type() != Type.GROUPING
-            && pItem.precedence() < peek().precedence()) {
-          T right = values.pop();
-          T left = values.pop();
-          values.push(pop().apply(left, right));
+      public void push(Operator<T> pItem) {
+        if (!isEmpty() && peek().get().type() != Type.GROUPING
+            && pItem.precedence() < peek().get().precedence()) {
+          T right = values.pop().get();
+          T left = values.pop().get();
+          values.push(pop().get().apply(left, right));
         }
-        return super.push(pItem);
+        super.push(pItem);
       }
     };
 
@@ -47,12 +47,12 @@ public abstract class InfixExpressionEvaluator<T> {
           if (grouping.opening()) {
             operators.push(grouping);
           } else {
-            Operator<T> op = operators.pop();
+            Operator<T> op = operators.pop().get();
             while (op.type() != Type.GROUPING) {
-              T right = values.pop();
-              T left = values.pop();
+              T right = values.pop().get();
+              T left = values.pop().get();
               values.push(op.apply(left, right));
-              op = operators.pop();
+              op = operators.pop().get();
             }
           }
           break;
@@ -61,13 +61,13 @@ public abstract class InfixExpressionEvaluator<T> {
     }
 
     while (!operators.isEmpty()) {
-      T right = values.pop();
-      T left = values.pop();
-      values.push(operators.pop().apply(left, right));
+      T right = values.pop().get();
+      T left = values.pop().get();
+      values.push(operators.pop().get().apply(left, right));
     }
 
     if (values.size() == 1) {
-      return Optional.of(values.pop());
+      return Optional.of(values.pop().get());
     }
 
     return Optional.empty();
