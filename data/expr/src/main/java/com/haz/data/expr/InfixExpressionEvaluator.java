@@ -16,7 +16,7 @@ import com.haz.data.stack.Stack;
  */
 public abstract class InfixExpressionEvaluator<T> {
 
-  @SuppressWarnings({ "unchecked", "serial" })
+  @SuppressWarnings({ "unchecked" })
   public Optional<T> eval(String pExpression) {
     Stack<T> values = new Stack<>();
     Stack<Operator<T>> operators = new Stack<Operator<T>>() {

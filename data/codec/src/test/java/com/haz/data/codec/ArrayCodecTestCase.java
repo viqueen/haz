@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 import com.haz.data.codec.annotation.Bind;
 
@@ -40,6 +41,9 @@ public class ArrayCodecTestCase {
   @Test
   public void testArrayWithSubCodec() throws IOException {
     Optional<Data> data = dataCodec.decode(dataStream);
+    assertTrue(data.isPresent());
+    assertEquals(1, data.get().arrayOfUnsignedShorts.length);
+    assertEquals(10, data.get().arrayOfUnsignedShorts[0]);
   }
 
   public static class Data {
