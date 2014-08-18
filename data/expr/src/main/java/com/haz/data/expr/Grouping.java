@@ -7,7 +7,7 @@ package com.haz.data.expr;
  * @author hasnaer
  *
  */
-public interface Grouping<T> extends Operator<T> {
+public interface Grouping extends Operator {
 
   @Override
   default Type type() {

@@ -49,7 +49,7 @@ public class ArithmeticExprEvaluator extends InfixExpressionEvaluator<Double> {
     return Optional.empty();
   }
 
-  enum ArithmeticGrouping implements Grouping<Double> {
+  enum ArithmeticGrouping implements Grouping {
     LEFT_PAREN(3, true), RIGHT_PAREN(3, false);
     final int     precedence;
     final boolean opening;
@@ -62,11 +62,6 @@ public class ArithmeticExprEvaluator extends InfixExpressionEvaluator<Double> {
     @Override
     public int precedence() {
       return precedence;
-    }
-
-    @Override
-    public Double apply(Double pLeft, Double pRight) {
-      return null;
     }
 
     @Override
@@ -85,7 +80,7 @@ public class ArithmeticExprEvaluator extends InfixExpressionEvaluator<Double> {
     }
   }
 
-  enum ArithmeticOperator implements Operator<Double> {
+  enum ArithmeticOperator implements BinaryOperator<Double> {
     ADD(1) {
       @Override
       public Double apply(Double pLeft, Double pRight) {

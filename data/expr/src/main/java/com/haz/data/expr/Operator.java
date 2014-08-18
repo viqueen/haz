@@ -7,7 +7,7 @@ package com.haz.data.expr;
  * @author hasnaer
  *
  */
-public interface Operator<T> extends Token {
+public interface Operator extends Token {
   
   default Type type() {
     return Type.OPERATOR;
@@ -15,5 +15,4 @@ public interface Operator<T> extends Token {
 
   int precedence();
 
-  public T apply(T pLeft, T pRight);
 }

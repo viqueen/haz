@@ -19,14 +19,14 @@ public abstract class InfixExpressionEvaluator<T> {
   @SuppressWarnings({ "unchecked" })
   public Optional<T> eval(String pExpression) {
     Stack<T> values = new Stack<>();
-    Stack<Operator<T>> operators = new Stack<Operator<T>>() {
+    Stack<Operator> operators = new Stack<Operator>() {
       @Override
-      public void push(Operator<T> pItem) {
+      public void push(Operator pItem) {
         if (!isEmpty() && peek().get().type() != Type.GROUPING
             && pItem.precedence() < peek().get().precedence()) {
           T right = values.pop().get();
           T left = values.pop().get();
-          values.push(pop().get().apply(left, right));
+          values.push(((BinaryOperator<T>)pop().get()).apply(left, right));
         }
         super.push(pItem);
       }
@@ -40,18 +40,18 @@ public abstract class InfixExpressionEvaluator<T> {
           values.push(((Value<T>) token.getLeft()).value);
           break;
         case OPERATOR:
-          operators.push((Operator<T>) token.getLeft());
+          operators.push((Operator) token.getLeft());
           break;
         case GROUPING:
           Grouping grouping = (Grouping) token.getLeft();
           if (grouping.opening()) {
             operators.push(grouping);
           } else {
-            Operator<T> op = operators.pop().get();
+            Operator op = operators.pop().get();
             while (op.type() != Type.GROUPING) {
               T right = values.pop().get();
               T left = values.pop().get();
-              values.push(op.apply(left, right));
+              values.push(((BinaryOperator<T>)op).apply(left, right));
               op = operators.pop().get();
             }
           }
@@ -63,7 +63,7 @@ public abstract class InfixExpressionEvaluator<T> {
     while (!operators.isEmpty()) {
       T right = values.pop().get();
       T left = values.pop().get();
-      values.push(operators.pop().get().apply(left, right));
+      values.push(((BinaryOperator<T>)operators.pop().get()).apply(left, right));
     }
 
     if (values.size() == 1) {
