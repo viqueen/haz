@@ -101,6 +101,7 @@
 
 	<modules>
 		<module>data</module>
+		<module>code-eval</module>
 	</modules>
 
 </project>
