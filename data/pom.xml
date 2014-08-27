@@ -47,5 +47,6 @@
 		<module>expr</module>
 		<module>codec</module>
 		<module>bytecode</module>
+		<module>prod-cons</module>
 	</modules>
 </project>
