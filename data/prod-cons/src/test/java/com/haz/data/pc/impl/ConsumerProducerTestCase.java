@@ -26,7 +26,45 @@ public class ConsumerProducerTestCase {
       }
     };
     channel.execute();
-    assertEquals((20 * 21) / 2, ((SumConsumer) channel.consumer().get()).getSum());
+    assertEquals(
+        (20 * 21) / 2,
+        ((SumConsumer) channel.consumer().get()).getSum());
+  }
+
+  @Test
+  public void testConsumerProducerPool() throws Exception {
+    Channel channel = new DataChannel() {
+      {
+        setConsumer(new SumConsumer(this));
+        setProducer(new ProducerPool(this) {
+          @Override
+          public void wrapUp() {
+
+          }
+
+          @Override
+          public void setUp() {
+            producers.add(new IntegerProducer(
+                this.getOutputChannel(),
+                false,
+                0,
+                20,
+                2));
+            producers.add(new IntegerProducer(
+                this.getOutputChannel(),
+                false,
+                1,
+                20,
+                2));
+          }
+
+        });
+      }
+    };
+    channel.execute();
+    assertEquals(
+        (20 * 21) / 2,
+        ((SumConsumer) channel.consumer().get()).getSum());
   }
 
   class SumConsumer extends DataConsumer {
@@ -64,6 +102,7 @@ public class ConsumerProducerTestCase {
 
     final int start, end, increment;
     int current;
+    boolean eoc;
 
     IntegerProducer(
         Channel pOutputChannel,
@@ -76,19 +115,20 @@ public class ConsumerProducerTestCase {
       end = pEnd;
       increment = pIncrement;
       current = start;
+      eoc = pEOC;
     }
 
     @Override
     public Stream<Optional<?>> offer() {
       int data = current;
-      current += increment;      
+      current += increment;
       return Stream.of(Optional.of(data));
     }
 
     @Override
     public boolean canProduce() {
       return current <= end;
-    }    
+    }
 
     @Override
     public void setUp() {
@@ -98,6 +138,10 @@ public class ConsumerProducerTestCase {
     public void wrapUp() {
     }
 
+    @Override
+    public boolean eoc() {
+      return eoc;
+    }
   }
 
 }

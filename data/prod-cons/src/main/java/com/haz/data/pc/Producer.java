@@ -14,6 +14,7 @@ public interface Producer extends Instance {
 
   @Override
   default void run() {
+    setUp();
     while (canProduce()) {
       offer().parallel().forEach(option -> {
         try {
@@ -24,13 +25,16 @@ public interface Producer extends Instance {
         }
       });
     }
-    getOutputChannel().triggerEOC();
+    if (eoc()) {
+      getOutputChannel().triggerEOC();
+    }
+    wrapUp();
   }
 
   public Stream<Optional<?>> offer();
 
   public boolean canProduce();
-
+  public boolean eoc();
   public Channel getOutputChannel();
 
 }
