@@ -32,6 +32,41 @@
 				<version>3.3.2</version>
 			</dependency>
 
+
+			<!-- EXTERNAL APIS -->
+			<dependency>
+				<groupId>com.googlecode.jen-api</groupId>
+				<artifactId>jen-api</artifactId>
+				<version>4.x.p</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.randomnoun.songkick</groupId>
+				<artifactId>songkick-api-client</artifactId>
+				<version>0.0.2</version>
+			</dependency>
+
+			<!-- HAZ Dependencies -->
+			<dependency>
+				<groupId>com.haz.data</groupId>
+				<artifactId>codec</artifactId>
+				<version>${haz.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.haz.data</groupId>
+				<artifactId>structures</artifactId>
+				<version>${haz.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.haz.data</groupId>
+				<artifactId>expr</artifactId>
+				<version>${haz.version}</version>
+			</dependency>
+			<dependency>
+			 <groupId>com.haz.data</groupId>
+			 <artifactId>prod-cons</artifactId>
+			 <version>${haz.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -97,11 +132,13 @@
 	<properties>
 		<java.source.version>1.8</java.source.version>
 		<java.target.version>1.8</java.target.version>
+		<haz.version>master-SNAPSHOT</haz.version>
 	</properties>
 
 	<modules>
 		<module>data</module>
 		<module>code-eval</module>
+		<module>custom-impl</module>
 	</modules>
 
 </project>

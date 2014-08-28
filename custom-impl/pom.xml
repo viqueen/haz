@@ -1,0 +1,26 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.haz</groupId>
+		<artifactId>root</artifactId>
+		<version>master-SNAPSHOT</version>
+	</parent>
+	<groupId>com.haz.custom</groupId>
+	<artifactId>custom-impl</artifactId>
+	<name>haz.custom</name>
+
+	<dependencies>
+		<!-- EXTERNAL APIS -->
+		<dependency>
+			<groupId>com.googlecode.jen-api</groupId>
+			<artifactId>jen-api</artifactId>
+		</dependency>
+		
+		<!-- HAZ Dependencies -->
+		<dependency>
+		  <groupId>com.haz.data</groupId>
+		  <artifactId>prod-cons</artifactId>
+		</dependency>
+	</dependencies>
+</project>
