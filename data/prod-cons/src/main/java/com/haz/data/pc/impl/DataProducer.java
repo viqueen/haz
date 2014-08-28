@@ -10,7 +10,7 @@ import com.haz.data.pc.Producer;
  * @author hasnaer
  *
  */
-abstract class DataProducer implements Producer {
+public abstract class DataProducer implements Producer {
   private Channel outputChannel;
 
   public DataProducer(Channel pOutputChannel) {

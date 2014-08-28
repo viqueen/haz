@@ -10,7 +10,7 @@ import com.haz.data.pc.Consumer;
  * @author hasnaer
  *
  */
-abstract class DataConsumer implements Consumer {
+public abstract class DataConsumer implements Consumer {
 
   private Channel inputChannel;
 
