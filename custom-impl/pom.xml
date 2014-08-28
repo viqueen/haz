@@ -16,11 +16,57 @@
 			<groupId>com.googlecode.jen-api</groupId>
 			<artifactId>jen-api</artifactId>
 		</dependency>
-		
+
 		<!-- HAZ Dependencies -->
 		<dependency>
-		  <groupId>com.haz.data</groupId>
-		  <artifactId>prod-cons</artifactId>
+			<groupId>com.haz.data</groupId>
+			<artifactId>prod-cons</artifactId>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<version>0.7.1</version>
+				<executions>
+					<execution>
+						<id>schema1-generate</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<extension>true</extension>
+							<schemaDirectory>src/main/resources/schemas</schemaDirectory>
+							<schemaIncludes>
+								<include>sample.rng</include>
+							</schemaIncludes>
+							<generatePackage>com.haz.sample</generatePackage>
+							<generateDirectory>${project.build.directory}/generated-sources/xjc</generateDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>schema2-generate</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<bindingDirectory>${project.build.directory}/generated-sources/xjc/META-INF</bindingDirectory>
+							<bindingIncludes>
+								<include>sun-jaxb.episode</include>
+							</bindingIncludes>
+							<extension>true</extension>
+							<schemaDirectory>src/main/resources/schemas</schemaDirectory>
+							<schemaIncludes>
+								<include>sample.rng</include>
+							</schemaIncludes>
+							<generatePackage>com.haz.sample</generatePackage>
+							<generateDirectory>${project.build.directory}/generated-sources/xjc</generateDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
