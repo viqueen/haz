@@ -34,16 +34,16 @@ public class ClassFile {
   @Bind(codec = "unsignedshort")
   protected int thisClass;
 
-   @Bind(codec = "unsignedshort")
+  @Bind(codec = "unsignedshort")
   protected int superClass;
 
-   @Bind(codec = "unsignedshort")
+  @Bind(codec = "unsignedshort")
   protected int interfacesCount;
 
-//   @Bind(codec = "unsignedshort", count = "$interfacesCount")
+  @Bind(subCodec = "unsignedshort", count = "$interfacesCount")
   protected int[] interfaces; // add a mapper or transformer, read
-                            // unsigned short but map it to an
-                            // entry in the constant pool
+                              // unsigned short but map it to an
+                              // entry in the constant pool
 
   // @Bind(codec = "unsignedshort")
   private int fieldsCount;
