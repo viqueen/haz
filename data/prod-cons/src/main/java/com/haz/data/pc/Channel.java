@@ -13,7 +13,22 @@ import java.util.concurrent.BlockingQueue;
 public interface Channel {
 
   BlockingQueue<Optional<?>> getQueue();
-  Producer getProducer();
-  Consumer getConsumer();
+
+  Optional<Producer> producer();
+
+  Optional<Consumer> consumer();
+
+  public void setConsumer(Consumer pConsumer);
+
+  public void setProducer(Producer pProducer);
+
+  public void execute() throws Exception;
+
+  default Optional<?> EOC() {
+    return Optional.empty();
+  }
   
+  default void triggerEOC() {
+    getQueue().add(EOC());
+  }
 }

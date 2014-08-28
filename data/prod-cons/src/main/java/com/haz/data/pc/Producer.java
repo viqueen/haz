@@ -6,17 +6,14 @@ package com.haz.data.pc;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.apache.log4j.Logger;
-
 /**
  * @author hasnaer
  *
  */
-public interface Producer {
+public interface Producer extends Instance {
 
-  final static Logger log = Logger.getLogger(Producer.class);
-
-  default void produce() {
+  @Override
+  default void run() {
     while (canProduce()) {
       offer().parallel().forEach(option -> {
         try {
@@ -27,6 +24,7 @@ public interface Producer {
         }
       });
     }
+    getOutputChannel().triggerEOC();
   }
 
   public Stream<Optional<?>> offer();

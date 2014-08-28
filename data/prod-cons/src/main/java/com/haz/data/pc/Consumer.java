@@ -9,12 +9,20 @@ import java.util.Optional;
  * @author hasnaer
  *
  */
-public interface Consumer {
+public interface Consumer extends Instance {
 
-  default void consume() throws InterruptedException {
-    for (Optional<?> data = fetch(); supports(data); data = fetch()) {
-      consume(data);
+  @Override
+  default void run() {
+    setUp();
+    try {
+      for (Optional<?> data = fetch(); supports(data); data = fetch()) {
+        consume(data);
+      }
     }
+    catch (InterruptedException e) {
+      log.error(e.getMessage(), e);
+    }
+    wrapUp();
   }
 
   public void consume(Optional<?> pData);
